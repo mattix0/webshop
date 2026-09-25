@@ -1,0 +1,33 @@
+.product-container {
+    display: flex;
+    justify-content: center;
+}
+
+.column-row {
+    margin: 80px;
+    padding: 20px;
+    width: 300px;
+    height: 300px;
+}
+
+.column-row input {
+    width: 40px;
+}
+
+.image {
+    padding: 110px;
+    background-color: gray;
+    border-radius: 12px;
+    margin: 10px 0;
+    color: orange;
+}
+
+.add-button {
+    text-decoration: none;
+    font-weight: 400;
+    color: #fff;
+    padding: 5px;
+    margin: 5px 0;
+    background-color: green;
+}
+
