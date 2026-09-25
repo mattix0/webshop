@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<link rel="stylesheet" href="../../css/default.css">
-    <link rel="stylesheet" href="../../css/navbar.css">
 
+<head>
+    <link rel="stylesheet" href="../../css/default.css">
+    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/login.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Account</title>
+    <title>Register</title>
 </head>
+
 <body>
     <header>
-            <h3>Webshop</h3>
-
+        <h3>Webshop</h3>
         <div class="nav-container">
             <a href="../../index.html">Home</a>
             <a href="products.html">Products</a>
@@ -20,6 +21,27 @@
             <a href="register.html">Register</a>
         </div>
     </header>
-    <h1>Register an account here</h1>
+    
+    <h1>Register your account here</h1>
+
+    <form action="register()" method="post">
+        <div class="form-container">
+            <label for="">Username</label>
+            <input type="text">
+            <label for="">Password</label>
+            <input type="password">
+            <label for="">First Name</label>
+            <input type="text">
+            <label for="">Last Name</label>
+            <input type="text">
+            <label for="">E-mail</label>
+            <input type="email">
+            <label for="">Phone</label>
+            <input type="text">
+            <input type="button" value="Register">
+        </div>
+    </form>
+
 </body>
+
 </html>

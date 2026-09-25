@@ -4,7 +4,7 @@
 <head>
     <link rel="stylesheet" href="../../css/default.css">
     <link rel="stylesheet" href="../../css/navbar.css">
-
+    <link rel="stylesheet" href="../../css/login.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
@@ -12,8 +12,7 @@
 
 <body>
     <header>
-            <h3>Webshop</h3>
-
+        <h3>Webshop</h3>
         <div class="nav-container">
             <a href="../../index.html">Home</a>
             <a href="products.html">Products</a>
@@ -22,7 +21,19 @@
             <a href="register.html">Register</a>
         </div>
     </header>
-    <h1>Login with your account here</h1>
+    
+    <h1>Login to your account here</h1>
+
+    <form action="login()" method="post">
+        <div class="form-container">
+            <label for="">Username</label>
+            <input type="text">
+            <label for="">Password</label>
+            <input type="password">
+            <input type="button" value="Login">
+        </div>
+    </form>
+
 </body>
 
 </html>
