@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="../../css/default.css">
     <link rel="stylesheet" href="../../css/navbar.css">
     <link rel="stylesheet" href="../../css/login.css">
+
+    <script src="../../js/handleForm.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
@@ -27,18 +30,18 @@
     <div class="form">
         <div class="form-container">
             <label for="">Username</label>
-            <input type="text">
+            <input type="text" id="username" required placeholder="Enter Username">
             <label for="">Password</label>
-            <input type="password">
+            <input type="password" id="password" required placeholder="Enter Password">
             <label for="">First Name</label>
-            <input type="text">
+            <input type="text" id="firstName" required placeholder="Enter First Name">
             <label for="">Last Name</label>
-            <input type="text">
+            <input type="text" id="lastName" required placeholder="Enter Last Name">
             <label for="">E-mail</label>
-            <input type="email">
+            <input type="email" id="email" required placeholder="Enter Email">
             <label for="">Phone</label>
-            <input type="text">
-            <input type="button" value="Register">
+            <input type="text" id="phone" required placeholder="Enter Phone">
+            <button onclick="register()">Register</button>
         </div>
     </div>
 
