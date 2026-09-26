@@ -6,6 +6,7 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Card from './pages/Card.jsx'
 import Products from './pages/Products.jsx'
+import Dashboard from './pages/Dashboard.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/products" element={<Products />} />
         <Route path="/card" element={<Card />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
  </StrictMode>
