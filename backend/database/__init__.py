@@ -1,1 +1,1 @@
-from .database import SessionDepends
+from .database import SessionDepends, create_db_and_tables

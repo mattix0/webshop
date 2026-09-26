@@ -1,6 +1,6 @@
 from helper import (DATABASE_TYPE, DATABASE_USER, DATABASE_PASSWORD, 
                    DATABASE_HOST, DATABASE_PORT, DATABASE_DB)
-from sqlmodel import create_engine, Session
+from sqlmodel import create_engine, Session, SQLModel
 from typing import Annotated
 from fastapi import Depends
 
@@ -18,3 +18,6 @@ def db_session():
         yield session
 
 SessionDepends = Annotated[Session, Depends(db_session)]
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
