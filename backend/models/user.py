@@ -1,13 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from sqlmodel import SQLModel, Field
 
-class LoginModel(BaseModel):
-    username: str
+class LoginUser(SQLModel, table=True):
+    username: str = Field(primary_key=True)
     password: str
-
-class RegisterModel(BaseModel):
-    username: str
-    password: str
-    first_name: str
-    last_name: str
-    email: EmailStr
-    phone: int
