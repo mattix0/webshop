@@ -1,1 +1,1 @@
-from .user import LoginModel, RegisterModel
+from .user import LoginUser
