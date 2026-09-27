@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth
+from routers import auth, admin
 from database import create_db_and_tables
+
 
 app = FastAPI()
 app.add_middleware(
@@ -13,7 +14,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 app.include_router(auth.router)
+app.include_router(admin.router)
+
 
 @app.on_event("startup")
 def on_startup():

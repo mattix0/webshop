@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status, HTTPException
-from models import UserCreate, UserLogin, User
+from models import UserCreate, UserLogin, User, UserResponse, UserOut
+from helper import verify_password, create_token, hash_password, CurrentUser, AdminUser
 from sqlmodel import select
 from database import SessionDepends
 
@@ -9,41 +10,37 @@ router = APIRouter(
 )
 
 
-@router.post("/login", status_code=status.HTTP_200_OK)
-def login(user: UserLogin, session: SessionDepends):
-    # check if user exists and password are correct
-    statement = select(User).where(User.username == user.username)
-    query_user = session.exec(statement).first()
-    if not query_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+@router.post("/login", response_model=UserResponse, status_code=status.HTTP_200_OK)
+def login(data: UserLogin, session: SessionDepends):
+    user = session.exec(select(User).where(User.username == data.username)).first()
 
-    if query_user.password == user.password:
-        return {"username": query_user.username}
-    else:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password incorrect.")
-    
+    if not user or not verify_password(data.password, user.password):
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
+
+    return UserResponse(token=create_token(user), user=UserOut.model_validate(user))    
+
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-def register(user: UserCreate, session: SessionDepends): 
-    # check if user already exists
-    statement = select(User).where(User.username == user.username)
-    user_exists = session.exec(statement).first()
-    if user_exists:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists.")
+def register(data: UserCreate, session: SessionDepends): 
+    user = session.exec(
+        select(User).where(
+            (User.username == data.username) | (User.email == data.email))).first()
+    
+    if user:
+        raise HTTPException(status_code=409, detail="Username or email already in use.")
 
-    # TODO: Hash the user password.
-    # register the user
     new_user = User(
-        username=user.username,
-        password=user.password,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        phone=user.phone
-    )
+        **data.model_dump(
+            exclude={"password"}), 
+            password=hash_password(data.password))
 
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
 
-    return {"message": "User successfully created."}
+    return {"message": "User created."}
+
+
+@router.get("/me", response_model=UserOut)
+def me(user: CurrentUser):
+    return user
