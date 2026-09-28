@@ -10,7 +10,9 @@ class Role(str, Enum):
 
 
 class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    __tablename__: str = "users"  #  type: ignore
+    
+    user_id: int | None = Field(default=None, primary_key=True)
     username: str = Field(min_length=1, nullable=False, unique=True)
     password: str = Field(min_length=6, nullable=False)
     first_name: str = Field(min_length=3, nullable=False)
@@ -36,7 +38,7 @@ class UserLogin(SQLModel):
 
 
 class UserOut(SQLModel):
-    id: int
+    user_id: int
     username: str
     email: str
     first_name: str

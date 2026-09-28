@@ -20,6 +20,8 @@ import AdminOverview from './pages/admin/AdminOverview'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminProducts from './pages/admin/AdminProducts'
 import AdminCustomers from './pages/admin/AdminCustomers'
+import AdminProductForm from './pages/admin/AdminProductForm'
+
 
 function AppRoutes() {
     return (
@@ -55,6 +57,7 @@ function AppRoutes() {
                 <Route index element={<AdminOverview />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="products" element={<AdminProducts />} />
+                <Route path="products/new" element={<AdminProductForm />} />
                 <Route path="customers" element={<AdminCustomers />} />
             </Route>
         </Routes>

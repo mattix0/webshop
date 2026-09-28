@@ -42,3 +42,25 @@ export function validateLoginForm(formData){
 
     return errors
 }
+
+export function validateProductForm(formData){
+    const errors = {}
+
+    if(!formData.name || formData.name.trim().length < 1){
+        errors.name = "Name has to be at least 1 character."
+    }
+
+    if(!formData.price || formData.price.trim().length < 1){
+        errors.price = "Price has to be at least 1 number."
+    }
+
+    if(!formData.stock || formData.stock.trim().length < 1){
+        errors.stock = "Stock has to be at least 1 number."
+    }
+
+    if(!formData.sku || formData.sku.trim().length < 1){
+        errors.sku = "Sku has to be at least 1 character."
+    }
+
+    return errors
+}

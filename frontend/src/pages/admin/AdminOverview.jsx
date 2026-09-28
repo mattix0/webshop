@@ -1,11 +1,39 @@
 import { useAuth } from '../../js/AuthContext'
+import { useEffect, useState } from "react"
+import { fetchCostumers } from '../../js/costumer'
+import { fetchProducts } from '../../js/products'
 
 function AdminOverview() {
     const { user } = useAuth()
+    const [customers, setCostumers] = useState([])
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState()
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        fetchCostumers()
+            .then(setCostumers)
+            .catch((error) => {
+                setError(error.response?.data.detail || "Failed to fetch costumers.")
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+
+            fetchProducts()
+            .then(setProducts)
+            .catch((error) => {
+                setError(error.response?.data.detail || "Failed to fetch products.")
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
+
 
     return (
         <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
                 <div className="bg-white rounded-2xl shadow border border-gray-200 p-5 text-center">
                     <h4 className="text-sm text-gray-600">Pending</h4>
                     <p className="mt-2 text-2xl font-medium text-gray-900">0</p>
@@ -22,8 +50,17 @@ function AdminOverview() {
                 </div>
 
                 <div className="bg-white rounded-2xl shadow border border-gray-200 p-5 text-center">
+                    <h4 className="text-sm text-gray-600">Products</h4>
+                    {products && (
+                        <p className="mt-2 text-2xl font-medium text-gray-900">{products.length}</p>
+                    )}
+                </div>
+
+                <div className="bg-white rounded-2xl shadow border border-gray-200 p-5 text-center">
                     <h4 className="text-sm text-gray-600">Customers</h4>
-                    <p className="mt-2 text-2xl font-medium text-gray-900">0</p>
+                    {customers && (
+                        <p className="mt-2 text-2xl font-medium text-gray-900">{customers.length}</p>
+                    )}
                 </div>
             </div>
 
