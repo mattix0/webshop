@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException
-from models import UserCreate, UserLogin, User, UserResponse, UserOut
+from models import UserCreate, UserLogin, User, UserResponse, UserOut, Product, ProductOut
 from helper import verify_password, create_token, hash_password, CurrentUser, AdminUser
 from sqlmodel import select
 from database import SessionDepends
@@ -44,3 +44,20 @@ def register(data: UserCreate, session: SessionDepends):
 @router.get("/me", response_model=UserOut)
 def me(user: CurrentUser):
     return user
+
+
+@router.get("/products", response_model=list[ProductOut],status_code=status.HTTP_200_OK)
+def get_all_products(user: CurrentUser, session: SessionDepends):
+    return session.exec(select(Product)).all()
+
+
+@router.get("/product/{product_id}", response_model=ProductOut, status_code=status.HTTP_200_OK)
+def get_product(user: CurrentUser, session: SessionDepends, product_id: int):
+    product = session.exec(
+        select(Product).where(Product.product_id == product_id)
+    ).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found.")
+
+    return product
