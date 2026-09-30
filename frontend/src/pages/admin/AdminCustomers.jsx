@@ -33,6 +33,9 @@ function AdminCustomers() {
                             <th scope="col" className="px-6 py-3 font-medium">Last Name</th>
                             <th scope="col" className="px-6 py-3 font-medium">Email</th>
                             <th scope="col" className="px-6 py-3 font-medium">Phone</th>
+                            <th scope="col" className="px-6 py-3 font-medium">Address</th>
+                            <th scope="col" className="px-6 py-3 font-medium">Country</th>
+                            <th scope="col" className="px-6 py-3 font-medium">Postal Code</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 text-gray-900">
@@ -67,6 +70,9 @@ function AdminCustomers() {
                                 <td className="px-6 py-4">{customer.last_name}</td>
                                 <td className="px-6 py-4">{customer.email}</td>
                                 <td className="px-6 py-4">{customer.phone}</td>
+                                <td className="px-6 py-4">{customer.address}</td>
+                                <td className="px-6 py-4">{customer.country}</td>
+                                <td className="px-6 py-4">{customer.postal_code}</td>
                             </tr>
                         )}
                     </tbody>

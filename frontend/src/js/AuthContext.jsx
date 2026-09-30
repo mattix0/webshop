@@ -1,29 +1,65 @@
-import { createContext, useContext, useState } from "react";
-import { getToken, getStoredUser, storeSession, clearSession } from "./auth"
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import { getToken, getStoredUser, storeSession, storeUser, clearSession, fetchMe } from "./auth"
 
 const AuthContext = createContext(null)
 
-export function AuthProvider({ children }){
+export function AuthProvider({ children }) {
     const [token, setToken] = useState(getToken())
     const [user, setUser] = useState(getStoredUser())
+    const [loading, setLoading] = useState(Boolean(getToken()))
 
-    function login(newToken, newUser){
+    const login = useCallback((newToken, newUser) => {
         storeSession(newToken, newUser)
         setToken(newToken)
         setUser(newUser)
-    }
+    }, [])
 
-    function logout(){
+    const logout = useCallback(() => {
         clearSession()
         setToken(null)
         setUser(null)
-    }
+    }, [])
+
+    useEffect(() => {
+        window.addEventListener('auth:expired', logout)
+        return () => window.removeEventListener('auth:expired', logout)
+    }, [logout])
+
+    useEffect(() => {
+        if (!token) {
+            setLoading(false)
+            return
+        }
+
+        let cancelled = false
+
+        fetchMe()
+            .then((me) => {
+                if (cancelled) return
+                storeUser(me)
+                setUser(me)
+            })
+            .catch((err) => {
+
+                if (!cancelled && err.response?.status !== 401) {
+                    console.error('Failed to refresh session:', err)
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false)
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [token])
 
     const value = {
         token,
         user,
         role: user?.role ?? null,
         isLoggedIn: Boolean(token),
+        loading,
         login,
         logout,
     }
@@ -33,7 +69,7 @@ export function AuthProvider({ children }){
 
 export function useAuth() {
     const context = useContext(AuthContext)
-    if(!context){
+    if (!context) {
         throw new Error('useAuth has to be used in AuthProvider.')
     }
     return context

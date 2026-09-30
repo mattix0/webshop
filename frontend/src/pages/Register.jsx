@@ -12,6 +12,9 @@ function Register() {
         last_name: '',
         email: '',
         phone: '',
+        address: '',
+        pcontryone: '',
+        postal_code: '',
     })
     const [errors, setErrors] = useState({})
     const [serverError, setServerError] = useState(null)
@@ -123,6 +126,39 @@ function Register() {
                     />
                     {errors.phone && (
                         <p className="text-xs text-red-600 mt-1 ml-2">{errors.phone}</p>
+                    )}
+                    <input
+                        type="text"
+                        name="address"
+                        onChange={handleChange}
+                        value={formData.address}
+                        placeholder="address"
+                        className="border border-gray-200 rounded-full px-4 py-2 text-sm w-full text-gray-900 focus:outline-none focus:border-indigo-600"
+                    />
+                    {errors.address && (
+                        <p className="text-xs text-red-600 mt-1 ml-2">{errors.address}</p>
+                    )}
+                    <input
+                        type="text"
+                        name="country"
+                        onChange={handleChange}
+                        value={formData.country}
+                        placeholder="Country"
+                        className="border border-gray-200 rounded-full px-4 py-2 text-sm w-full text-gray-900 focus:outline-none focus:border-indigo-600"
+                    />
+                    {errors.country && (
+                        <p className="text-xs text-red-600 mt-1 ml-2">{errors.country}</p>
+                    )}
+                    <input
+                        type="text"
+                        name="postal_code"
+                        onChange={handleChange}
+                        value={formData.postal_code}
+                        placeholder="Postal Code"
+                        className="border border-gray-200 rounded-full px-4 py-2 text-sm w-full text-gray-900 focus:outline-none focus:border-indigo-600"
+                    />
+                    {errors.postal_code && (
+                        <p className="text-xs text-red-600 mt-1 ml-2">{errors.postal_code}</p>
                     )}
                     <button
                         type="submit"
