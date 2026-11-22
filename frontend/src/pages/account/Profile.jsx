@@ -9,6 +9,9 @@ function Profile() {
         { label: 'Last Name', value: user?.last_name },
         { label: 'Email', value: user?.email },
         { label: 'Phone', value: user?.phone },
+        { label: 'Address', value: user?.address },
+        { label: 'Country', value: user?.country },
+        { label: 'Postal Code', value: user?.postal_code },
     ]
 
     return (

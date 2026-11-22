@@ -19,6 +19,9 @@ class User(SQLModel, table=True):
     last_name: str = Field(min_length=3, nullable=False)
     email: EmailStr = Field(nullable=False, unique=True)
     phone: str = Field(min_length=1, nullable=False)
+    address: str = Field(min_length=1, nullable=False)
+    country: str = Field(min_length=1, nullable=False)
+    postal_code: str = Field(min_length=1, nullable=False)
     role: Role = Field(default=Role.user)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -30,6 +33,9 @@ class UserCreate(SQLModel):
     last_name: str
     email: EmailStr
     phone: str
+    address: str
+    country: str
+    postal_code: str
 
 
 class UserLogin(SQLModel):
@@ -45,7 +51,9 @@ class UserOut(SQLModel):
     last_name: str
     phone: str
     role: Role
-
+    address: str
+    country: str
+    postal_code: str
 
 class UserResponse(SQLModel):
     token: str

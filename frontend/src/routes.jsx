@@ -58,6 +58,7 @@ function AppRoutes() {
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="products/new" element={<AdminProductForm />} />
+                <Route path="products/:productId/edit" element={<AdminProductForm />} />
                 <Route path="customers" element={<AdminCustomers />} />
             </Route>
         </Routes>

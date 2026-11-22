@@ -1,35 +1,63 @@
 import { useEffect, useState } from 'react'
 import { fetchProducts } from '../js/products'
+import { addToCart } from '../js/cart'
+import { imageUrl } from '../js/media'
 
-function formatPrice(price) {
-    return new Intl.NumberFormat('da-DK', {
-        style: 'currency',
-        currency: 'DKK',
-    }).format(Number(price))
+function QtyControl({ qty, max, onChange }) {
+    return (
+        <div className="flex items-center border border-gray-200 rounded-full">
+            <button
+                type="button"
+                onClick={() => onChange(qty - 1)}
+                disabled={qty <= 1}
+                className="w-8 h-8 text-gray-500 hover:text-gray-900 transition disabled:text-gray-300"
+                aria-label="Decrease quantity"
+            >
+                &minus;
+            </button>
+            <span className="w-8 text-center text-sm tabular-nums">{qty}</span>
+            <button
+                type="button"
+                onClick={() => onChange(qty + 1)}
+                disabled={qty >= max}
+                className="w-8 h-8 text-gray-500 hover:text-gray-900 transition disabled:text-gray-300"
+                aria-label="Increase quantity"
+            >
+                +
+            </button>
+        </div>
+    )
 }
 
 function ProductCard({ product }) {
     const soldOut = product.stock <= 0
+    const [qty, setQty] = useState(1)
+
+    function handleQty(next) {
+        if (next < 1 || next > product.stock) {
+            return
+        }
+        setQty(next)
+    }
+
+    function handleAdd() {
+        addToCart(product, qty)
+        setQty(1)
+    }
 
     return (
         <div className="group bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
             <div className="aspect-square bg-gray-100 overflow-hidden relative">
                 {product.image_path ? (
                     <img
-                        src={product.image_path}
+                        src={imageUrl(product.image_path)}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-sm text-gray-400">
                         No image
                     </div>
-                )}
-
-                {soldOut && (
-                    <span className="absolute top-3 left-3 bg-gray-900/80 text-white text-xs font-medium px-3 py-1 rounded-full">
-                        Sold out
-                    </span>
                 )}
             </div>
 
@@ -37,20 +65,30 @@ function ProductCard({ product }) {
                 <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
                     {product.name}
                 </h3>
-                <p className="text-xs text-gray-400 mt-1">{product.sku}</p>
+                <p className="text-xs text-gray-400 mt-1">SKU: {product.sku}</p>
 
                 <div className="mt-auto pt-4 flex items-center justify-between gap-2">
                     <span className="text-base font-medium text-gray-900">
-                        {formatPrice(product.price)}
+                        {product.price} $
                     </span>
-                    <button
-                        type="button"
-                        disabled={soldOut}
-                        className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-indigo-700 transition disabled:bg-gray-200 disabled:text-gray-400"
-                    >
-                        Add
-                    </button>
+
+                    {!soldOut && (
+                        <QtyControl qty={qty} max={product.stock} onChange={handleQty} />
+                    )}
                 </div>
+
+                <button
+                    type="button"
+                    disabled={soldOut}
+                    onClick={handleAdd}
+                    className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-indigo-700 transition disabled:bg-gray-200 disabled:text-gray-400 mt-3 w-full"
+                >
+                    Add
+                </button>
+
+                <span className="text-xs font-medium text-gray-400 mt-2">
+                        In stock: {product.stock}
+                    </span>
             </div>
         </div>
     )
@@ -82,6 +120,8 @@ function Products() {
             )
             .finally(() => setLoading(false))
     }, [])
+
+
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">

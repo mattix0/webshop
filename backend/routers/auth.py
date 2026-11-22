@@ -1,7 +1,10 @@
 from fastapi import APIRouter, status, HTTPException
-from models import UserCreate, UserLogin, User, UserResponse, UserOut, Product, ProductOut
+from models import (UserCreate, UserLogin, User, 
+                    UserResponse, UserOut, Product, 
+                    OrderCreate, OrderItem, Order,
+                    OrderOut)
 from helper import verify_password, create_token, hash_password, CurrentUser, AdminUser
-from sqlmodel import select
+from sqlmodel import select, col
 from database import SessionDepends
 
 router = APIRouter(
@@ -46,18 +49,81 @@ def me(user: CurrentUser):
     return user
 
 
-@router.get("/products", response_model=list[ProductOut],status_code=status.HTTP_200_OK)
-def get_all_products(user: CurrentUser, session: SessionDepends):
-    return session.exec(select(Product)).all()
+@router.post("/checkout", response_model=OrderOut, status_code=status.HTTP_201_CREATED)
+def create_order(payload: OrderCreate, session: SessionDepends, current_user: CurrentUser):
+    # collapse duplicate lines, so two entries for the same product become one
+    wanted: dict[int, int] = {}
+    for line in payload.items:
+        wanted[line.product_id] = wanted.get(line.product_id, 0) + line.quantity
+
+    # one query for every product, locked so two concurrent orders
+    # cannot both pass the stock check
+    products = session.exec(
+        select(Product)
+        .where(col(Product.product_id).in_(list(wanted)))
+        .with_for_update()
+    ).all()
+    by_id = {p.product_id: p for p in products}
+
+    missing = set(wanted) - set(by_id)
+    if missing:
+        raise HTTPException(404, f"Unknown product id: {sorted(missing)}")
+
+    order = Order(
+        user_id=current_user.user_id,
+        first_name=current_user.first_name,
+        last_name=current_user.last_name,
+        email=current_user.email,
+        phone=current_user.phone,
+        address=current_user.address,
+        country=current_user.country,
+        postal_code=current_user.postal_code,
+    )
+
+    for product_id, quantity in wanted.items():
+        product = by_id[product_id]
+        if product.stock < quantity:
+            raise HTTPException(
+                409,
+                f"Only {product.stock} left of {product.name}.",
+            )
+        product.stock -= quantity
+
+        order.items.append(
+            OrderItem(
+                product_id=product_id,
+                quantity=quantity,
+                unit_price=product.price,
+                product_name=product.name,
+                sku=product.sku,
+                image_path=product.image_path,
+            )
+        )
+        session.add(product)
+
+    session.add(order)
+    session.commit()
+    session.refresh(order)
+
+    return OrderOut.model_validate(order)
 
 
-@router.get("/product/{product_id}", response_model=ProductOut, status_code=status.HTTP_200_OK)
-def get_product(user: CurrentUser, session: SessionDepends, product_id: int):
-    product = session.exec(
-        select(Product).where(Product.product_id == product_id)
-    ).first()
+@router.get("/my-orders", response_model=list[OrderOut], status_code=status.HTTP_200_OK)
+def get_my_orders(session: SessionDepends, current_user: CurrentUser):
+    return session.exec(
+        select(Order)
+        .where(Order.user_id == current_user.user_id)
+        .order_by(col(Order.created_at).desc())
+    ).all()
 
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found.")
 
-    return product
+@router.get("/my-orders/{order_id}", response_model=OrderOut, status_code=status.HTTP_200_OK)
+def get_my_order(order_id: int, session: SessionDepends, current_user: CurrentUser):
+    order = session.get(Order, order_id)
+
+    # a 403 here would confirm the order exists, so unknown and
+    # not-yours both answer the same way
+    if not order or order.user_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Order not found.")
+
+    return order
